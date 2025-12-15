@@ -2809,3 +2809,53 @@ void GFXcanvas16::drawFastRawHLine(int16_t x, int16_t y, int16_t w,
     buffer[i] = color;
   }
 }
+
+void Adafruit_GFX::drawEllipse(int16_t x0, int16_t y0,
+                              int16_t rx, int16_t ry,
+                              uint16_t color) {
+    if (rx <= 0 || ry <= 0) return;
+    
+    int16_t x = 0;
+    int16_t y = ry;
+    int32_t rx2 = rx * rx;
+    int32_t ry2 = ry * ry;
+    int32_t fx2 = 4 * rx2;
+    int32_t fy2 = 4 * ry2;
+    int32_t p;
+    
+    // 区域1
+    p = ry2 - (rx2 * ry) + (rx2 / 4);
+    while (fx2 * y > fy2 * x) {
+        writePixel(x0 + x, y0 + y, color);
+        writePixel(x0 - x, y0 + y, color);
+        writePixel(x0 + x, y0 - y, color);
+        writePixel(x0 - x, y0 - y, color);
+        
+        x++;
+        if (p < 0) {
+            p += fy2 * (2 * x + 1);
+        } else {
+            y--;
+            p += fy2 * (2 * x + 1) - fx2 * 2 * y;
+        }
+    }
+    
+    // 区域2
+    p = ry2 * (x + 0.5) * (x + 0.5) + 
+        rx2 * (y - 1) * (y - 1) - rx2 * ry2;
+    
+    while (y >= 0) {
+        writePixel(x0 + x, y0 + y, color);
+        writePixel(x0 - x, y0 + y, color);
+        writePixel(x0 + x, y0 - y, color);
+        writePixel(x0 - x, y0 - y, color);
+        
+        y--;
+        if (p > 0) {
+            p += -fx2 * (2 * y + 1) + fx2;
+        } else {
+            x++;
+            p += fy2 * (2 * x + 1) - fx2 * (2 * y + 1) + fx2;
+        }
+    }
+}

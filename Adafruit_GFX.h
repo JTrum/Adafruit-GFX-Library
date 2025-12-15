@@ -15,7 +15,7 @@
 /// A generic graphics superclass that can handle all sorts of drawing. At a
 /// minimum you can subclass and provide drawPixel(). At a maximum you can do a
 /// ton of overriding to optimize. Used for any/all Adafruit displays!
-class Adafruit_GFX : public Print {
+class Adafruit_GFX : public Pri
 
 public:
   Adafruit_GFX(int16_t w, int16_t h); // Constructor
@@ -124,7 +124,7 @@ public:
   void setTextSize(uint8_t s);
   void setTextSize(uint8_t sx, uint8_t sy);
   void setFont(const GFXfont *f = NULL);
-
+  void drawEllipse(int16_t x0, int16_t y0, int16_t rx, int16_t ry, uint16_t color);
   /**********************************************************************/
   /*!
     @brief  Set text cursor location
