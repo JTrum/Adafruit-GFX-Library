@@ -355,54 +355,54 @@ void Adafruit_GFX::drawLine(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
     @param    color 16-bit 5-6-5 Color to draw with
 */
 /**************************************************************************/
-void Adafruit_GFX::drawEllipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh,
-                               uint16_t color) {
-#if defined(ESP8266)
-  yield();
-#endif
-  // Bresenham's ellipse algorithm
-  int16_t x = 0, y = rh;
-  int32_t rw2 = rw * rw, rh2 = rh * rh;
-  int32_t twoRw2 = 2 * rw2, twoRh2 = 2 * rh2;
+// void Adafruit_GFX::drawEllipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh,
+//                                uint16_t color) {
+// #if defined(ESP8266)
+//   yield();
+// #endif
+//   // Bresenham's ellipse algorithm
+//   int16_t x = 0, y = rh;
+//   int32_t rw2 = rw * rw, rh2 = rh * rh;
+//   int32_t twoRw2 = 2 * rw2, twoRh2 = 2 * rh2;
 
-  int32_t decision = rh2 - (rw2 * rh) + (rw2 / 4);
+//   int32_t decision = rh2 - (rw2 * rh) + (rw2 / 4);
 
-  startWrite();
+//   startWrite();
 
-  // region 1
-  while ((twoRh2 * x) < (twoRw2 * y)) {
-    writePixel(x0 + x, y0 + y, color);
-    writePixel(x0 - x, y0 + y, color);
-    writePixel(x0 + x, y0 - y, color);
-    writePixel(x0 - x, y0 - y, color);
-    x++;
-    if (decision < 0) {
-      decision += rh2 + (twoRh2 * x);
-    } else {
-      decision += rh2 + (twoRh2 * x) - (twoRw2 * y);
-      y--;
-    }
-  }
+//   // region 1
+//   while ((twoRh2 * x) < (twoRw2 * y)) {
+//     writePixel(x0 + x, y0 + y, color);
+//     writePixel(x0 - x, y0 + y, color);
+//     writePixel(x0 + x, y0 - y, color);
+//     writePixel(x0 - x, y0 - y, color);
+//     x++;
+//     if (decision < 0) {
+//       decision += rh2 + (twoRh2 * x);
+//     } else {
+//       decision += rh2 + (twoRh2 * x) - (twoRw2 * y);
+//       y--;
+//     }
+//   }
 
-  // region 2
-  decision = ((rh2 * (2 * x + 1) * (2 * x + 1)) >> 2) +
-             (rw2 * (y - 1) * (y - 1)) - (rw2 * rh2);
-  while (y >= 0) {
-    writePixel(x0 + x, y0 + y, color);
-    writePixel(x0 - x, y0 + y, color);
-    writePixel(x0 + x, y0 - y, color);
-    writePixel(x0 - x, y0 - y, color);
-    y--;
-    if (decision > 0) {
-      decision += rw2 - (twoRw2 * y);
-    } else {
-      decision += rw2 + (twoRh2 * x) - (twoRw2 * y);
-      x++;
-    }
-  }
+//   // region 2
+//   decision = ((rh2 * (2 * x + 1) * (2 * x + 1)) >> 2) +
+//              (rw2 * (y - 1) * (y - 1)) - (rw2 * rh2);
+//   while (y >= 0) {
+//     writePixel(x0 + x, y0 + y, color);
+//     writePixel(x0 - x, y0 + y, color);
+//     writePixel(x0 + x, y0 - y, color);
+//     writePixel(x0 - x, y0 - y, color);
+//     y--;
+//     if (decision > 0) {
+//       decision += rw2 - (twoRw2 * y);
+//     } else {
+//       decision += rw2 + (twoRh2 * x) - (twoRw2 * y);
+//       x++;
+//     }
+//   }
 
-  endWrite();
-}
+//   endWrite();
+// }
 
 /**************************************************************************/
 /*!
@@ -2842,4 +2842,53 @@ void Adafruit_GFX::drawPentagram(int16_t x0, int16_t y0, int16_t radius, uint16_
     drawLine(x[4], y[4], x[1], y[1], color);
     drawLine(x[1], y[1], x[3], y[3], color);
     drawLine(x[3], y[3], x[0], y[0], color);
+}
+void Adafruit_GFX::drawEllipse(int16_t x0, int16_t y0,
+                              int16_t rx, int16_t ry,
+                              uint16_t color) {
+    if (rx <= 0 || ry <= 0) return;
+    
+    int16_t x = 0;
+    int16_t y = ry;
+    int32_t rx2 = rx * rx;
+    int32_t ry2 = ry * ry;
+    int32_t fx2 = 4 * rx2;
+    int32_t fy2 = 4 * ry2;
+    int32_t p;
+    
+    // 区域1
+    p = ry2 - (rx2 * ry) + (rx2 / 4);
+    while (fx2 * y > fy2 * x) {
+        writePixel(x0 + x, y0 + y, color);
+        writePixel(x0 - x, y0 + y, color);
+        writePixel(x0 + x, y0 - y, color);
+        writePixel(x0 - x, y0 - y, color);
+        
+        x++;
+        if (p < 0) {
+            p += fy2 * (2 * x + 1);
+        } else {
+            y--;
+            p += fy2 * (2 * x + 1) - fx2 * 2 * y;
+        }
+    }
+    
+    // 区域2
+    p = ry2 * (x + 0.5) * (x + 0.5) + 
+        rx2 * (y - 1) * (y - 1) - rx2 * ry2;
+    
+    while (y >= 0) {
+        writePixel(x0 + x, y0 + y, color);
+        writePixel(x0 - x, y0 + y, color);
+        writePixel(x0 + x, y0 - y, color);
+        writePixel(x0 - x, y0 - y, color);
+        
+        y--;
+        if (p > 0) {
+            p += -fx2 * (2 * y + 1) + fx2;
+        } else {
+            x++;
+            p += fy2 * (2 * x + 1) - fx2 * (2 * y + 1) + fx2;
+        }
+    }
 }

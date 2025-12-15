@@ -74,9 +74,9 @@ public:
   void fillCircle(int16_t x0, int16_t y0, int16_t r, uint16_t color);
   void fillCircleHelper(int16_t x0, int16_t y0, int16_t r, uint8_t cornername,
                         int16_t delta, uint16_t color);
-  void drawEllipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh,
+  void drawEllipse(int16_t x0, int16_t y0, int16_t rx, int16_t ry,
                    uint16_t color);
-  void fillEllipse(int16_t x0, int16_t y0, int16_t rw, int16_t rh,
+  void fillEllipse(int16_t x0, int16_t y0, int16_t rx, int16_t ry,
                    uint16_t color);
   void drawTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2,
                     int16_t y2, uint16_t color);
